@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  古民家ウェブサイト（v2：記録ページ方式）
+  ------------------------------------------------------------
+  ■ 構成
+    index-v2.html … トップ（最新の記録カードだけ載せる）
+    archive.html  … 記録の一覧
+    posts/        … 1つの記録＝1ページ（_template.html をコピー）
+    images/日付/  … 記録ごとの写真フォルダ（ファイル名は自由）
+    assets/site.css … 全ページ共通の見た目
+
+  ■ 記録を1件追加する手順
+    1. images/2026-08-01/ のような日付フォルダを作り写真を入れる
+    2. posts/_template.html をコピーして本文を書く
+    3. archive.html の一覧に1行追加
+    4. このページの「活動の記録」カードの古いものを差し替え
+  ============================================================
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>古民家の記録</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="logo"><a href="index-v2.html">古民家の記録</a></div>
+  <nav>
+    <a href="#about">はじめに</a>
+    <a href="#now">出会ったころ</a>
+    <a href="#record">活動の記録</a>
+    <a href="#visit">訪れる</a>
+    <a href="archive.html">記録一覧</a>
+  </nav>
+</header>
+
+<!-- ============ トップ ============ -->
+<div class="hero" id="hero">
+  <!-- ▼スライドを増やしたい時はこの .slide をコピーして hero-7.jpg… と足すだけ -->
+  <div class="slide active">
+    <div class="photo" data-label="写真をここに（images/hero-1.jpg）">
+      <img src="images/hero-1.jpg" alt="古民家の外観1" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <div class="slide">
+    <div class="photo" data-label="写真をここに（images/hero-2.jpg）">
+      <img src="images/hero-2.jpg" alt="古民家の外観2" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <div class="slide">
+    <div class="photo" data-label="写真をここに（images/hero-3.jpg）">
+      <img src="images/hero-3.jpg" alt="古民家の外観3" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <div class="slide">
+    <div class="photo" data-label="写真をここに（images/hero-4.jpg）">
+      <img src="images/hero-4.jpg" alt="古民家の外観4" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <div class="slide">
+    <div class="photo" data-label="写真をここに（images/hero-5.jpg）">
+      <img src="images/hero-5.jpg" alt="古民家の外観5" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <div class="slide">
+    <div class="photo" data-label="写真をここに（images/hero-6.jpg）">
+      <img src="images/hero-6.jpg" alt="古民家の外観6" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <!-- ▲ここまで -->
+  <button class="arrow prev" id="heroPrev" aria-label="前の写真">&#8249;</button>
+  <button class="arrow next" id="heroNext" aria-label="次の写真">&#8250;</button>
+  <div class="dots" id="heroDots"></div>
+  <div class="scroll-hint">SCROLL</div>
+</div>
+
+<!-- ============ はじめに ============ -->
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head fade" style="margin-bottom:0">
+      <div class="idx">00 &nbsp;&mdash;&nbsp; はじめに</div>
+      <h2>百年、人の集まってきた家</h2>
+      <div class="divider"></div>
+      <div class="about-inner">
+        <!-- ▼ここから -->
+        <p>炭鉱がまだ栄えていたころから、川と街道のほとりに立つ家。かつては石炭を運ぶ人たちや、その勤め人たちが集まり、休んでいく場所でもあったといいます。その後は大家さんの一家が代々受け継ぎ、自分たちの手で直しながら、丁寧に住み継いできました。</p>
+        <p class="about-quote">「朽ちていくのを眺めるより、<br>みんなに使ってもらえたら嬉しい」</p>
+        <p class="about-attr">&mdash; 大家さんの言葉</p>
+        <p>思い出のつまった大切な家を、これからも生かしていきたい。大切に使ってくれる人とともに、次の代へつないでいきたい——大家さんのその思いと私たちが出会い、このプロジェクトははじまりました。ここをどう使っていくのか、どう残していくのか。大家さんと一緒に、ゆっくり探っていく途中をここに記録します。</p>
+        <!-- ▲ここまで -->
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 古民家の今 ============ -->
+<section id="now" style="background:var(--paper-2)">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <div class="idx">01 &nbsp;&mdash;&nbsp; 出会ったころ</div>
+      <h2>二〇二六年、出会ったころの姿</h2>
+      <div class="divider"></div>
+      <!-- ▼ここから -->
+      <p class="lead">土間に差す光、年月を経た木の質感、庭に咲く季節の花。手を入れる前の、ありのままの佇まい。この姿は、このまま残しておきます。</p>
+      <!-- ▲ここまで -->
+    </div>
+
+    <div class="now-grid fade">
+      <div class="photo g1" data-label="写真（images/now-1.jpg）"><img src="images/now-1.jpg" alt="古民家の様子1" onerror="this.style.display='none'"></div>
+      <div class="photo g2" data-label="写真（images/now-2.jpg）"><img src="images/now-2.jpg" alt="古民家の様子2" onerror="this.style.display='none'"></div>
+      <div class="photo g3" data-label="写真（images/now-3.jpg）"><img src="images/now-3.jpg" alt="古民家の様子3" onerror="this.style.display='none'"></div>
+      <div class="photo g4" data-label="写真（images/now-4.jpg）"><img src="images/now-4.jpg" alt="古民家の様子4" onerror="this.style.display='none'"></div>
+    </div>
+    <!-- ▼ここから -->
+    <p class="now-note">かつてこの家では和裁が教えられ、美容室が二十年あまりつづき、生け花の教室も開かれていました。呉服屋さんが出入りし、人の声の絶えなかったころの気配は、いまも家のあちこちに残っています。</p>
+    <!-- ▲ここまで -->
+  </div>
+</section>
+
+<!-- ============ 活動の記録（最新分だけカードで見せる） ============ -->
+<section id="record">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <div class="idx">02 &nbsp;&mdash;&nbsp; きろく</div>
+      <h2>活動の記録</h2>
+      <div class="divider"></div>
+      <!-- ▼ここから -->
+      <p class="lead">打ち合わせ、手入れ、小さな会。この家であったことを、一件ずつ記録しています。ここには最新のものだけ。過去の記録は一覧からどうぞ。</p>
+      <!-- ▲ここまで -->
+    </div>
+
+    <div class="events fade">
+      <!-- ▼カード：新しい記録ができたら一番上に足し、古いものを削る（3枚まで目安） -->
+      <a class="ev-card" href="posts/2026-05-21_goaisatsu.html">
+        <div class="photo" data-label="写真（images/DSC_1405.jpg）"><img src="images/DSC_1405.jpg" alt="はじめのご挨拶" onerror="this.style.display='none'"></div>
+        <div class="body">
+          <span class="tag">打ち合わせ</span>
+          <h3>はじめのご挨拶</h3>
+          <div class="meta">2026.05.21</div>
+          <p>大家さん一家にお会いし、家の歴史と思い出をうかがいました。すべての出発点になった日。</p>
+        </div>
+      </a>
+      <article class="ev-card">
+        <div class="photo" data-label="写真をここに"></div>
+        <div class="body">
+          <span class="tag">お茶会</span>
+          <h3>中国茶を淹れる会</h3>
+          <div class="meta">開催予定</div>
+          <p>縁側でゆっくりお茶を。何煎も味の変わるお茶を、その場の会話とともに味わう小さな集まりです。</p>
+        </div>
+      </article>
+      <!-- ▲ここまで -->
+    </div>
+
+    <div class="more fade"><a href="archive.html">すべての記録を見る</a></div>
+  </div>
+</section>
+
+<!-- ============ 訪れる ============ -->
+<section id="visit" class="visit">
+  <div class="photo" data-label="写真（images/visit.jpg）"><img src="images/visit.jpg" alt="訪れる" onerror="this.style.display='none'"></div>
+  <div class="inner fade">
+    <div class="idx">03 &nbsp;&mdash;&nbsp; つながる</div>
+    <!-- ▼ここから -->
+    <h2>ふらっと、立ち寄れる家へ</h2>
+    <p>特別な場所にするつもりはありません。この家の時間を、いっしょに味わってくれる人を待っています。</p>
+    <p>見学・利用・イベントのご相談は、お気軽にご連絡ください。</p>
+    <div class="contact">
+      <a href="#">お問い合わせ</a>
+      <a href="#">SNSを見る</a>
+    </div>
+    <!-- ▲ここまで -->
+  </div>
+</section>
+
+<footer>
+  <div class="fl">古民家の記録</div>
+  <div>大家さんと共に、少しずつ受け継いでいます</div>
+  <div style="margin-top:10px;opacity:.7">&copy; 2026</div>
+</footer>
+
+<script>
+  const nav=document.getElementById('nav');
+  addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>40));
+  const io=new IntersectionObserver((es)=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+  },{threshold:.15});
+  document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+
+  /* ---- ヒーローのカルーセル ---- */
+  (function(){
+    const slides=[...document.querySelectorAll('#hero .slide')];
+    const dotsBox=document.getElementById('heroDots');
+    if(slides.length<2){if(dotsBox)dotsBox.style.display='none';return;}
+    let i=0,timer;
+    slides.forEach((_,n)=>{
+      const b=document.createElement('button');
+      if(n===0)b.classList.add('active');
+      b.setAttribute('aria-label',(n+1)+'枚目');
+      b.addEventListener('click',()=>{go(n);reset();});
+      dotsBox.appendChild(b);
+    });
+    const dots=[...dotsBox.children];
+    function go(n){
+      slides[i].classList.remove('active');dots[i].classList.remove('active');
+      i=(n+slides.length)%slides.length;
+      slides[i].classList.add('active');dots[i].classList.add('active');
+    }
+    function reset(){clearInterval(timer);timer=setInterval(()=>go(i+1),9000);}
+
+    const hero=document.getElementById('hero');
+    document.getElementById('heroPrev').addEventListener('click',()=>{go(i-1);reset();});
+    document.getElementById('heroNext').addEventListener('click',()=>{go(i+1);reset();});
+
+    /* マウス／指でのドラッグ送り */
+    let startX=null,dragging=false;
+    hero.addEventListener('pointerdown',e=>{startX=e.clientX;dragging=true;hero.classList.add('dragging');});
+    hero.addEventListener('pointerup',e=>{
+      if(!dragging)return;dragging=false;hero.classList.remove('dragging');
+      const dx=e.clientX-startX;
+      if(Math.abs(dx)>45){go(dx<0?i+1:i-1);reset();}
+    });
+    hero.addEventListener('pointerleave',()=>{dragging=false;hero.classList.remove('dragging');});
+    hero.querySelectorAll('img').forEach(im=>im.setAttribute('draggable','false'));
+
+    reset();
+  })();
+</script>
+</body>
+</html>

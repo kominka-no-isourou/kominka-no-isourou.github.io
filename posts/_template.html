@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  記録ページの雛形
+  ------------------------------------------------------------
+  ■ 使い方
+    1. このファイルをコピーして「2026-08-01_taihaku.html」のように
+       日付＋ローマ字の名前を付ける（日本語ファイル名はURLが崩れるので避ける）
+    2. 写真は images/2026-08-01/ のような日付フォルダに入れる（名前は自由）
+    3. ▼ここから〜▲ここまで の間を書き換える
+    4. archive.html の一覧に1行追加、index-v2.html のカードを入れ替え
+  ■ タグの例：打ち合わせ／お茶会／手入れ／試泊／見学
+  ============================================================
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>タイトルをここに｜古民家の記録</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+</head>
+<body>
+
+<header class="nav scrolled" id="nav">
+  <div class="logo"><a href="../index-v2.html">古民家の記録</a></div>
+  <nav>
+    <a href="../archive.html">記録一覧</a>
+  </nav>
+</header>
+
+<main class="post">
+  <div class="post-head">
+    <!-- ▼ここから -->
+    <div class="date">2026.00.00</div>
+    <span class="tag">タグ</span>
+    <h1>タイトルをここに</h1>
+    <!-- ▲ここまで -->
+  </div>
+
+  <!-- ▼ここから（本文。<p>〜</p>が1段落） -->
+  <p>本文をここに書きます。</p>
+
+  <!-- 写真1枚（説明つき） -->
+  <figure>
+    <div class="photo" data-label="写真（images/日付/ファイル名.jpg）">
+      <img src="../images/2026-00-00/photo-1.jpg" alt="写真の説明" onerror="this.style.display='none'">
+    </div>
+    <figcaption>写真の説明をここに</figcaption>
+  </figure>
+
+  <p>本文のつづき。</p>
+
+  <!-- 写真2枚並べたいとき -->
+  <div class="grid2">
+    <div class="photo" data-label="写真"><img src="../images/2026-00-00/photo-2.jpg" alt="" onerror="this.style.display='none'"></div>
+    <div class="photo" data-label="写真"><img src="../images/2026-00-00/photo-3.jpg" alt="" onerror="this.style.display='none'"></div>
+  </div>
+
+  <!-- 動画を載せたいとき：YouTubeに「限定公開」でアップして、
+       共有→埋め込む のコードから src の URL だけ差し替える
+  <div class="video">
+    <iframe src="https://www.youtube.com/embed/XXXXXXXXXXX" title="動画" allowfullscreen></iframe>
+  </div>
+  -->
+  <!-- ▲ここまで -->
+
+  <a class="back" href="../archive.html">&larr; 記録一覧へもどる</a>
+</main>
+
+<footer>
+  <div class="fl">古民家の記録</div>
+  <div>大家さんと共に、少しずつ受け継いでいます</div>
+  <div style="margin-top:10px;opacity:.7">&copy; 2026</div>
+</footer>
+
+</body>
+</html>

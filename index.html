@@ -6,7 +6,7 @@
   ■ 写真の入れ方
     1. このファイルと同じ場所に「images」というフォルダを作る
     2. 下の名前で写真を入れる（.jpg でも .png でもOK。名前を合わせるだけ）
-         hero.jpg        … トップの大きな写真
+         hero-1.jpg 〜 hero-6.jpg … トップのスライド写真
          now-1.jpg 〜 now-4.jpg   … 古民家の今
          record-1.jpg 〜 record-3.jpg … 記録・進捗
          event-1.jpg, event-2.jpg … イベント報告
@@ -119,6 +119,16 @@
     writing-mode:vertical-rl;text-shadow:0 0 6px rgba(0,0,0,.35);
   }
 
+  /* ---------- はじめに ---------- */
+  .about-inner{max-width:720px}
+  .about-inner p{margin-top:20px;font-size:clamp(14.5px,1.8vw,16px);color:var(--ink)}
+  .about-quote{
+    font-family:"Noto Serif JP",serif;font-weight:400;
+    font-size:clamp(18px,2.6vw,24px);line-height:1.9;letter-spacing:.04em;
+    margin:36px 0 6px !important;
+  }
+  .about-attr{font-size:13px !important;color:var(--ink-soft) !important;margin-top:8px !important;letter-spacing:.08em}
+
   /* ---------- 汎用セクション ---------- */
   section{padding:clamp(70px,11vw,130px) clamp(20px,5vw,48px)}
   .wrap{max-width:var(--maxw);margin:0 auto}
@@ -192,8 +202,9 @@
 <header class="nav" id="nav">
   <div class="logo">古民家の記録</div>
   <nav>
+    <a href="#about">はじめに</a>
     <a href="#now">古民家の今</a>
-    <a href="#record">記録・進捗</a>
+    <a href="#record">引き継ぎの記録</a>
     <a href="#event">イベント</a>
     <a href="#visit">訪れる</a>
   </nav>
@@ -239,15 +250,33 @@
   <div class="scroll-hint">SCROLL</div>
 </div>
 
+<!-- ============ はじめに ============ -->
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head fade" style="margin-bottom:0">
+      <div class="idx">00 &nbsp;&mdash;&nbsp; はじめに</div>
+      <h2>百年、人の集まってきた家</h2>
+      <div class="divider"></div>
+      <div class="about-inner">
+        <!-- ▼ここから -->
+        <p>炭鉱がまだ栄えていたころから、川と街道のほとりに立つ家。かつては石炭を運ぶ人たちや、その勤め人たちが集まり、休んでいく場所でもあったといいます。その後は大家さんの一家が代々受け継ぎ、自分たちの手で直しながら、丁寧に住み継いできました。</p>
+        <p class="about-quote">「壊されてしまったり、朽ちていくのを眺めるより、<br>みんなに使ってもらえたら嬉しい」</p>
+        <p>思い出のつまった大切な家を、これからも生かしていきたい。大切に使ってくれる人とともに、次の代へつないでいきたい——大家さんのその思いと私たちが出会い、このプロジェクトははじまりました。ここをどう使っていくのか、どう残していくのか。大家さんと一緒に、ゆっくり探っていく途中をここに記録します。</p>
+        <!-- ▲ここまで -->
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ============ 古民家の今 ============ -->
-<section id="now">
+<section id="now" style="background:var(--paper-2)">
   <div class="wrap">
     <div class="sec-head fade">
       <div class="idx">01 &nbsp;&mdash;&nbsp; いま</div>
-      <h2>古民家の、今の姿</h2>
+      <h2>古民家の今の姿</h2>
       <div class="divider"></div>
       <!-- ▼ここから -->
-      <p class="lead">祖父母と親戚の手で建てられた家。土間の光、木の質感、庭に咲く季節の花。手を入れる前の、そのままの佇まいを写真で残しています。</p>
+      <p class="lead">土間に差す光、年月を経た木の質感、庭に咲く季節の花。</p>
       <!-- ▲ここまで -->
     </div>
 
@@ -258,20 +287,20 @@
       <div class="photo g4" data-label="写真（images/now-4.jpg）"><img src="images/now-4.jpg" alt="古民家の様子4" onerror="this.style.display='none'"></div>
     </div>
     <!-- ▼ここから -->
-    <p class="now-note">かつてこの家では、祖母が和裁を、母が20年以上つづけた美容室を営み、生け花の教室も開かれていました。呉服屋さんが出入りし、いつも人の声があった場所です。</p>
+    <p class="now-note">和裁が教えられ、美容室が二十年あまりつづき、生け花の教室も開かれていました。呉服屋さんが出入りし、知らない人が家にいるのが当たり前。たくさんのお客さんが訪れるこのお家を少しずつ手を加えながら守ってきた跡が、ところどころに見受けられます。</p>
     <!-- ▲ここまで -->
   </div>
 </section>
 
 <!-- ============ 記録・進捗 ============ -->
-<section id="record" style="background:var(--paper-2)">
+<section id="record">
   <div class="wrap">
     <div class="sec-head fade">
       <div class="idx">02 &nbsp;&mdash;&nbsp; あゆみ</div>
-      <h2>引き継ぎの記録</h2>
+      <h2>これからのあゆみ</h2>
       <div class="divider"></div>
       <!-- ▼ここから -->
-      <p class="lead">大家さんとの対話からはじまった、受け継ぎの歩み。無理のないペースで、少しずつ。ここに進捗を書き足していきます。</p>
+      <p class="lead">大きな計画表はありません。できることから、無理のないペースで。進んだぶんだけ、ここに書き足していきます。</p>
       <!-- ▲ここまで -->
     </div>
 
@@ -280,18 +309,17 @@
       <div class="t-item">
         <div class="date">2026.05</div>
         <h3>はじめのご挨拶</h3>
-        <p>大家さん一家とお会いし、家の歴史や思い出をうかがいました。「朽ちていくのを眺めるより、みんなに使ってもらえたら嬉しい」という言葉から、すべてが始まりました。</p>
-        <div class="photo" data-label="写真（images/record-1.jpg）"><img src="images/record-1.jpg" alt="記録1" onerror="this.style.display='none'"></div>
+        <p>大家さん一家とお会いし、家の歴史や思い出をうかがいました。この日に聞いた話のひとつひとつが、いまの取り組みの出発点になっています。</p>
       </div>
       <div class="t-item">
         <div class="date">これから</div>
-        <h3>現状を記録する</h3>
-        <p>写真と映像で、今の姿を残していきます。季節ごとに表情が変わるので、そのときどきの庭や光もあわせて。古い資料や地図のデジタル化も進めます。</p>
+        <h3>変化の記録</h3>
+        <p>写真と映像で、今の姿を残していきます。季節ごとに表情が変わる、そのときどきの様子もあわせて。</p>
       </div>
       <div class="t-item">
         <div class="date">この夏〜秋</div>
         <h3>試しに過ごしてみる</h3>
-        <p>夏に試験的に泊まり、秋ごろから少しずつ場所として使いはじめられたら、と考えています。草引きも、作業というより一緒に過ごす時間として。</p>
+        <p>ご家族だけで管理してきたこのお家。私たちも時々訪れながら、手入れの仕方や使い方を学んでいきます。作業というよりも、一緒に過ごす時間として。</p>
       </div>
       <!-- ▲ここまで -->
     </div>
@@ -306,7 +334,7 @@
       <h2>イベントの報告</h2>
       <div class="divider"></div>
       <!-- ▼ここから -->
-      <p class="lead">お茶を淹れる小さな会から。まずは気軽に、この家で過ごす時間をつくっていきます。開催の様子や、これからの予定を載せていきます。</p>
+      <p class="lead">大きな催しではなく、お茶を淹れるくらいの小さな会から。</p>
       <!-- ▲ここまで -->
     </div>
 
@@ -316,9 +344,9 @@
         <div class="photo" data-label="写真（images/event-1.jpg）"><img src="images/event-1.jpg" alt="イベント1" onerror="this.style.display='none'"></div>
         <div class="body">
           <span class="tag">お茶会</span>
-          <h3>中国茶を淹れる会</h3>
+          <h3>読書と中国茶を淹れる会</h3>
           <div class="meta">開催予定 &nbsp;/&nbsp; 古民家にて</div>
-          <p>縁側でゆっくりお茶を。何煎も味の変わるお茶を、その場の会話とともに味わう小さな集まりです。</p>
+          <p>ゆるく集まり、ゆっくりお茶を。本を読むもよし、喋りにくるもよし。</p>
         </div>
       </article>
       <article class="ev-card">
@@ -326,7 +354,7 @@
         <div class="body">
           <span class="tag">これから</span>
           <h3>次のイベント</h3>
-          <div class="meta">日程調整中</div>
+          <div class="meta">計画中</div>
           <p>味噌づくりのワークショップや、庭の手入れをかねた集まりなど。決まりしだい、ここでお知らせします。</p>
         </div>
       </article>
@@ -341,11 +369,11 @@
   <div class="inner fade">
     <div class="idx">04 &nbsp;&mdash;&nbsp; つながる</div>
     <!-- ▼ここから -->
-    <h2>誰でも、訪れられる場所へ</h2>
-    <p>特別な家ではなく、誰かがふらっと立ち寄れる家に。古民家の良さを、いっしょに味わってくれる人を待っています。</p>
-    <p>見学・利用・イベントのご相談は、お気軽にご連絡ください。</p>
+    <h2>いつか帰って来れるような場所へ</h2>
+    <p>ゆっくりと、使う人を増やしていけたらなと思っています。</p>
+    <p>まだまだ先ではありますが、少しずつ情報公開していきますのでお待ちください。</p>
     <div class="contact">
-      <a href="#">お問い合わせ</a>
+
       <a href="#">SNSを見る</a>
     </div>
     <!-- ▲ここまで -->
