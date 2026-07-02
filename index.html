@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  古民家ウェブサイト（第一版）
+  ------------------------------------------------------------
+  ■ 写真の入れ方
+    1. このファイルと同じ場所に「images」というフォルダを作る
+    2. 下の名前で写真を入れる（.jpg でも .png でもOK。名前を合わせるだけ）
+         hero.jpg        … トップの大きな写真
+         now-1.jpg 〜 now-4.jpg   … 古民家の今
+         record-1.jpg 〜 record-3.jpg … 記録・進捗
+         event-1.jpg, event-2.jpg … イベント報告
+         visit.jpg       … 訪れる（下部）
+    3. 写真がまだ無い場所は、自動で「写真をここに」の枠が出ます
+  ■ 文章の直し方
+    <!-- ▼ここから --> 〜 <!-- ▲ここまで --> の間の日本語を書き換えるだけ
+  ============================================================
+-->
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>古民家の記録</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ffffff;
+    --paper-2:#f7f7f6;
+    --ink:#1c1c1c;
+    --ink-soft:#6d6d6d;
+    --line:#e8e8e6;
+    --accent:#1c1c1c;
+    --accent-deep:#1c1c1c;
+    --maxw:1180px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Noto Sans JP",sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.9;
+    font-weight:300;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.serif{font-family:"Noto Serif JP",serif}
+
+  /* ---------- ヘッダー ---------- */
+  header.nav{
+    position:fixed;top:0;left:0;right:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px clamp(20px,5vw,48px);
+    background:rgba(255,255,255,.86);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid transparent;
+    transition:.4s;
+  }
+  header.nav.scrolled{border-bottom:1px solid var(--line)}
+  header.nav .logo{font-family:"Noto Serif JP",serif;font-size:18px;letter-spacing:.14em;font-weight:500}
+  header.nav nav{display:flex;gap:clamp(14px,2.4vw,30px)}
+  header.nav nav a{
+    color:var(--ink-soft);text-decoration:none;font-size:13px;letter-spacing:.08em;
+    padding-bottom:2px;border-bottom:1px solid transparent;transition:.25s;
+  }
+  header.nav nav a:hover{color:var(--ink);border-color:var(--accent)}
+  @media(max-width:640px){header.nav nav{display:none}}
+
+  /* ---------- 写真プレースホルダの仕組み ---------- */
+  .photo{position:relative;overflow:hidden;background:var(--paper-2)}
+  .photo::before{
+    content:attr(data-label);
+    position:absolute;inset:0;
+    display:flex;align-items:center;justify-content:center;
+    color:#bcbcbc;font-size:13px;letter-spacing:.14em;
+    font-family:"Noto Serif JP",serif;
+    background:
+      repeating-linear-gradient(45deg,transparent,transparent 12px,rgba(0,0,0,.03) 12px,rgba(0,0,0,.03) 24px),
+      var(--paper-2);
+  }
+  .photo img{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
+    z-index:1;
+  }
+
+  /* ---------- ヒーロー（カルーセル） ---------- */
+  .hero{position:relative;height:100vh;min-height:560px;width:100%;overflow:hidden}
+  .hero .slide{position:absolute;inset:0;opacity:0;transition:opacity 2.4s ease;z-index:1}
+  .hero .slide.active{opacity:1;z-index:2}
+  .hero .slide .photo{position:absolute;inset:0}
+  .hero .dots{
+    position:absolute;z-index:5;bottom:30px;left:50%;transform:translateX(-50%);
+    display:flex;gap:11px;
+  }
+  .hero .dots button{
+    width:9px;height:9px;border-radius:50%;padding:0;cursor:pointer;
+    border:1px solid rgba(255,255,255,.85);background:transparent;transition:.3s;
+    box-shadow:0 0 4px rgba(0,0,0,.25);
+  }
+  .hero .dots button.active{background:#fff}
+  .hero{cursor:grab}
+  .hero.dragging{cursor:grabbing}
+  .hero .arrow{
+    position:absolute;top:50%;transform:translateY(-50%);z-index:5;
+    width:46px;height:46px;border-radius:50%;
+    border:1px solid rgba(255,255,255,.7);background:rgba(0,0,0,.18);
+    color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;
+    font-size:22px;line-height:1;padding:0 0 3px;opacity:.55;transition:opacity .3s,background .3s;
+  }
+  .hero:hover .arrow{opacity:1}
+  .hero .arrow:hover{background:rgba(0,0,0,.4)}
+  .hero .arrow.prev{left:clamp(12px,3vw,30px)}
+  .hero .arrow.next{right:clamp(12px,3vw,30px)}
+  @media(max-width:640px){.hero .arrow{width:40px;height:40px;font-size:19px}}
+  .scroll-hint{
+    position:absolute;z-index:5;bottom:24px;right:clamp(16px,4vw,40px);
+    color:#fff;font-size:11px;letter-spacing:.3em;opacity:.85;
+    writing-mode:vertical-rl;text-shadow:0 0 6px rgba(0,0,0,.35);
+  }
+
+  /* ---------- 汎用セクション ---------- */
+  section{padding:clamp(70px,11vw,130px) clamp(20px,5vw,48px)}
+  .wrap{max-width:var(--maxw);margin:0 auto}
+  .sec-head{margin-bottom:clamp(38px,6vw,64px)}
+  .sec-head .idx{font-size:12px;letter-spacing:.3em;color:var(--accent-deep);margin-bottom:14px}
+  .sec-head h2{font-size:clamp(24px,3.6vw,38px);font-weight:400;letter-spacing:.08em;line-height:1.5}
+  .sec-head .lead{margin-top:22px;max-width:640px;color:var(--ink-soft);font-size:clamp(14px,1.7vw,16px)}
+  .divider{width:46px;height:1px;background:var(--accent);margin:18px 0 0}
+
+  /* 古民家の今：写真グリッド */
+  .now-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:clamp(10px,1.6vw,20px)}
+  .now-grid .photo{border-radius:2px}
+  .now-grid .g1{grid-column:span 7;aspect-ratio:4/3}
+  .now-grid .g2{grid-column:span 5;aspect-ratio:3/4}
+  .now-grid .g3{grid-column:span 5;aspect-ratio:3/4}
+  .now-grid .g4{grid-column:span 7;aspect-ratio:4/3}
+  @media(max-width:720px){
+    .now-grid .g1,.now-grid .g2,.now-grid .g3,.now-grid .g4{grid-column:1 / -1;aspect-ratio:4/3}
+  }
+  .now-note{margin-top:30px;color:var(--ink-soft);font-size:14px;max-width:660px}
+
+  /* 記録・進捗：タイムライン */
+  .timeline{border-left:1px solid var(--line);margin-left:6px}
+  .t-item{position:relative;padding:0 0 clamp(40px,6vw,58px) clamp(26px,4vw,44px)}
+  .t-item:last-child{padding-bottom:0}
+  .t-item::before{
+    content:"";position:absolute;left:-5px;top:6px;width:9px;height:9px;border-radius:50%;
+    background:var(--accent);box-shadow:0 0 0 4px var(--paper);
+  }
+  .t-item .date{font-size:12px;letter-spacing:.16em;color:var(--accent-deep);margin-bottom:6px}
+  .t-item h3{font-size:clamp(17px,2.2vw,21px);font-weight:500;margin-bottom:12px}
+  .t-item p{color:var(--ink-soft);font-size:15px;max-width:640px}
+  .t-item .photo{margin-top:18px;aspect-ratio:16/9;border-radius:2px;max-width:560px}
+
+  /* イベント報告：カード */
+  .events{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(18px,2.4vw,30px)}
+  .ev-card{background:var(--paper-2);border:1px solid var(--line);border-radius:3px;overflow:hidden;display:flex;flex-direction:column}
+  .ev-card .photo{aspect-ratio:16/10}
+  .ev-card .body{padding:22px 24px 26px}
+  .ev-card .tag{display:inline-block;font-size:11px;letter-spacing:.12em;color:var(--accent-deep);border:1px solid var(--accent);border-radius:999px;padding:3px 12px;margin-bottom:14px}
+  .ev-card h3{font-size:19px;font-weight:500;margin-bottom:10px}
+  .ev-card .meta{font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-bottom:12px}
+  .ev-card p{font-size:14px;color:var(--ink-soft)}
+
+  /* 訪れる */
+  .visit{position:relative;color:#fdf9f0;padding:0}
+  .visit .photo{position:absolute;inset:0;z-index:0}
+  .visit::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(20,20,20,.55),rgba(20,20,20,.72))}
+  .visit .inner{position:relative;z-index:2;max-width:720px;margin:0 auto;text-align:center;padding:clamp(80px,13vw,150px) 24px}
+  .visit .idx{font-size:12px;letter-spacing:.3em;opacity:.85;margin-bottom:16px}
+  .visit h2{font-size:clamp(24px,3.6vw,36px);font-weight:400;letter-spacing:.08em;margin-bottom:26px}
+  .visit p{opacity:.92;font-size:15px;font-weight:300;margin:0 auto 14px;max-width:560px}
+  .visit .contact{margin-top:34px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .visit .contact a{
+    color:#fdf9f0;text-decoration:none;border:1px solid rgba(253,249,240,.5);
+    padding:12px 26px;border-radius:999px;font-size:13px;letter-spacing:.1em;transition:.25s;
+  }
+  .visit .contact a:hover{background:rgba(253,249,240,.12);border-color:#fdf9f0}
+
+  /* フッター */
+  footer{background:#fff;color:var(--ink-soft);text-align:center;padding:48px 24px;font-size:12.5px;letter-spacing:.1em;border-top:1px solid var(--line)}
+  footer .fl{font-family:"Noto Serif JP",serif;font-size:16px;letter-spacing:.18em;color:var(--ink);margin-bottom:10px}
+  footer a{color:var(--ink-soft)}
+
+  .fade{opacity:0;transform:translateY(24px);transition:opacity 1s ease,transform 1s ease}
+  .fade.in{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="logo">古民家の記録</div>
+  <nav>
+    <a href="#now">古民家の今</a>
+    <a href="#record">記録・進捗</a>
+    <a href="#event">イベント</a>
+    <a href="#visit">訪れる</a>
+  </nav>
+</header>
+
+<!-- ============ トップ ============ -->
+<div class="hero" id="hero">
+  <!-- ▼スライドを増やしたい時はこの .slide をコピーして hero-4.jpg… と足すだけ -->
+  <div class="slide active">
+    <div class="photo" data-label="写真をここに（images/hero-1.jpg）">
+      <img src="images/hero-1.jpg" alt="古民家の外観1" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <div class="slide">
+    <div class="photo" data-label="写真をここに（images/hero-2.jpg）">
+      <img src="images/hero-2.jpg" alt="古民家の外観2" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <div class="slide">
+    <div class="photo" data-label="写真をここに（images/hero-3.jpg）">
+      <img src="images/hero-3.jpg" alt="古民家の外観3" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <div class="slide">
+    <div class="photo" data-label="写真をここに（images/hero-4.jpg）">
+      <img src="images/hero-4.jpg" alt="古民家の外観4" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <div class="slide">
+    <div class="photo" data-label="写真をここに（images/hero-5.jpg）">
+      <img src="images/hero-5.jpg" alt="古民家の外観5" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <div class="slide">
+    <div class="photo" data-label="写真をここに（images/hero-6.jpg）">
+      <img src="images/hero-6.jpg" alt="古民家の外観6" onerror="this.style.display='none'">
+    </div>
+  </div>
+  <!-- ▲ここまで -->
+  <button class="arrow prev" id="heroPrev" aria-label="前の写真">&#8249;</button>
+  <button class="arrow next" id="heroNext" aria-label="次の写真">&#8250;</button>
+  <div class="dots" id="heroDots"></div>
+  <div class="scroll-hint">SCROLL</div>
+</div>
+
+<!-- ============ 古民家の今 ============ -->
+<section id="now">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <div class="idx">01 &nbsp;&mdash;&nbsp; いま</div>
+      <h2>古民家の、今の姿</h2>
+      <div class="divider"></div>
+      <!-- ▼ここから -->
+      <p class="lead">祖父母と親戚の手で建てられた家。土間の光、木の質感、庭に咲く季節の花。手を入れる前の、そのままの佇まいを写真で残しています。</p>
+      <!-- ▲ここまで -->
+    </div>
+
+    <div class="now-grid fade">
+      <div class="photo g1" data-label="写真（images/now-1.jpg）"><img src="images/now-1.jpg" alt="古民家の様子1" onerror="this.style.display='none'"></div>
+      <div class="photo g2" data-label="写真（images/now-2.jpg）"><img src="images/now-2.jpg" alt="古民家の様子2" onerror="this.style.display='none'"></div>
+      <div class="photo g3" data-label="写真（images/now-3.jpg）"><img src="images/now-3.jpg" alt="古民家の様子3" onerror="this.style.display='none'"></div>
+      <div class="photo g4" data-label="写真（images/now-4.jpg）"><img src="images/now-4.jpg" alt="古民家の様子4" onerror="this.style.display='none'"></div>
+    </div>
+    <!-- ▼ここから -->
+    <p class="now-note">かつてこの家では、祖母が和裁を、母が20年以上つづけた美容室を営み、生け花の教室も開かれていました。呉服屋さんが出入りし、いつも人の声があった場所です。</p>
+    <!-- ▲ここまで -->
+  </div>
+</section>
+
+<!-- ============ 記録・進捗 ============ -->
+<section id="record" style="background:var(--paper-2)">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <div class="idx">02 &nbsp;&mdash;&nbsp; あゆみ</div>
+      <h2>引き継ぎの記録</h2>
+      <div class="divider"></div>
+      <!-- ▼ここから -->
+      <p class="lead">大家さんとの対話からはじまった、受け継ぎの歩み。無理のないペースで、少しずつ。ここに進捗を書き足していきます。</p>
+      <!-- ▲ここまで -->
+    </div>
+
+    <div class="timeline fade">
+      <!-- ▼各項目：日付・見出し・本文・写真名 を差し替え -->
+      <div class="t-item">
+        <div class="date">2026.05</div>
+        <h3>はじめのご挨拶</h3>
+        <p>大家さん一家とお会いし、家の歴史や思い出をうかがいました。「朽ちていくのを眺めるより、みんなに使ってもらえたら嬉しい」という言葉から、すべてが始まりました。</p>
+        <div class="photo" data-label="写真（images/record-1.jpg）"><img src="images/record-1.jpg" alt="記録1" onerror="this.style.display='none'"></div>
+      </div>
+      <div class="t-item">
+        <div class="date">これから</div>
+        <h3>現状を記録する</h3>
+        <p>写真と映像で、今の姿を残していきます。季節ごとに表情が変わるので、そのときどきの庭や光もあわせて。古い資料や地図のデジタル化も進めます。</p>
+      </div>
+      <div class="t-item">
+        <div class="date">この夏〜秋</div>
+        <h3>試しに過ごしてみる</h3>
+        <p>夏に試験的に泊まり、秋ごろから少しずつ場所として使いはじめられたら、と考えています。草引きも、作業というより一緒に過ごす時間として。</p>
+      </div>
+      <!-- ▲ここまで -->
+    </div>
+  </div>
+</section>
+
+<!-- ============ イベント報告 ============ -->
+<section id="event">
+  <div class="wrap">
+    <div class="sec-head fade">
+      <div class="idx">03 &nbsp;&mdash;&nbsp; あつまる</div>
+      <h2>イベントの報告</h2>
+      <div class="divider"></div>
+      <!-- ▼ここから -->
+      <p class="lead">お茶を淹れる小さな会から。まずは気軽に、この家で過ごす時間をつくっていきます。開催の様子や、これからの予定を載せていきます。</p>
+      <!-- ▲ここまで -->
+    </div>
+
+    <div class="events fade">
+      <!-- ▼各カードを差し替え -->
+      <article class="ev-card">
+        <div class="photo" data-label="写真（images/event-1.jpg）"><img src="images/event-1.jpg" alt="イベント1" onerror="this.style.display='none'"></div>
+        <div class="body">
+          <span class="tag">お茶会</span>
+          <h3>中国茶を淹れる会</h3>
+          <div class="meta">開催予定 &nbsp;/&nbsp; 古民家にて</div>
+          <p>縁側でゆっくりお茶を。何煎も味の変わるお茶を、その場の会話とともに味わう小さな集まりです。</p>
+        </div>
+      </article>
+      <article class="ev-card">
+        <div class="photo" data-label="写真（images/event-2.jpg）"><img src="images/event-2.jpg" alt="イベント2" onerror="this.style.display='none'"></div>
+        <div class="body">
+          <span class="tag">これから</span>
+          <h3>次のイベント</h3>
+          <div class="meta">日程調整中</div>
+          <p>味噌づくりのワークショップや、庭の手入れをかねた集まりなど。決まりしだい、ここでお知らせします。</p>
+        </div>
+      </article>
+      <!-- ▲ここまで -->
+    </div>
+  </div>
+</section>
+
+<!-- ============ 訪れる ============ -->
+<section id="visit" class="visit">
+  <div class="photo" data-label="写真（images/visit.jpg）"><img src="images/visit.jpg" alt="訪れる" onerror="this.style.display='none'"></div>
+  <div class="inner fade">
+    <div class="idx">04 &nbsp;&mdash;&nbsp; つながる</div>
+    <!-- ▼ここから -->
+    <h2>誰でも、訪れられる場所へ</h2>
+    <p>特別な家ではなく、誰かがふらっと立ち寄れる家に。古民家の良さを、いっしょに味わってくれる人を待っています。</p>
+    <p>見学・利用・イベントのご相談は、お気軽にご連絡ください。</p>
+    <div class="contact">
+      <a href="#">お問い合わせ</a>
+      <a href="#">SNSを見る</a>
+    </div>
+    <!-- ▲ここまで -->
+  </div>
+</section>
+
+<footer>
+  <div class="fl">古民家の記録</div>
+  <div>大家さんと共に、少しずつ受け継いでいます</div>
+  <div style="margin-top:10px;opacity:.7">&copy; 2026</div>
+</footer>
+
+<script>
+  const nav=document.getElementById('nav');
+  addEventListener('scroll',()=>nav.classList.toggle('scrolled',scrollY>40));
+  const io=new IntersectionObserver((es)=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+  },{threshold:.15});
+  document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+
+  /* ---- ヒーローのカルーセル ---- */
+  (function(){
+    const slides=[...document.querySelectorAll('#hero .slide')];
+    const dotsBox=document.getElementById('heroDots');
+    if(slides.length<2){if(dotsBox)dotsBox.style.display='none';return;}
+    let i=0,timer;
+    slides.forEach((_,n)=>{
+      const b=document.createElement('button');
+      if(n===0)b.classList.add('active');
+      b.setAttribute('aria-label',(n+1)+'枚目');
+      b.addEventListener('click',()=>{go(n);reset();});
+      dotsBox.appendChild(b);
+    });
+    const dots=[...dotsBox.children];
+    function go(n){
+      slides[i].classList.remove('active');dots[i].classList.remove('active');
+      i=(n+slides.length)%slides.length;
+      slides[i].classList.add('active');dots[i].classList.add('active');
+    }
+    function reset(){clearInterval(timer);timer=setInterval(()=>go(i+1),9000);}
+
+    const hero=document.getElementById('hero');
+    document.getElementById('heroPrev').addEventListener('click',()=>{go(i-1);reset();});
+    document.getElementById('heroNext').addEventListener('click',()=>{go(i+1);reset();});
+
+    /* マウス／指でのドラッグ送り */
+    let startX=null,dragging=false;
+    hero.addEventListener('pointerdown',e=>{startX=e.clientX;dragging=true;hero.classList.add('dragging');});
+    hero.addEventListener('pointerup',e=>{
+      if(!dragging)return;dragging=false;hero.classList.remove('dragging');
+      const dx=e.clientX-startX;
+      if(Math.abs(dx)>45){go(dx<0?i+1:i-1);reset();}
+    });
+    hero.addEventListener('pointerleave',()=>{dragging=false;hero.classList.remove('dragging');});
+    /* 画像のドラッグ選択を無効化 */
+    hero.querySelectorAll('img').forEach(im=>im.setAttribute('draggable','false'));
+
+    reset();
+  })();
+</script>
+</body>
+</html>
