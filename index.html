@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <!--
   ============================================================
-  古民家ウェブサイト（第一版）
+  古民家ウェブサイト（v2：記録ページ方式）
   ------------------------------------------------------------
-  ■ 写真の入れ方
-    1. このファイルと同じ場所に「images」というフォルダを作る
-    2. 下の名前で写真を入れる（.jpg でも .png でもOK。名前を合わせるだけ）
-         hero-1.jpg 〜 hero-6.jpg … トップのスライド写真
-         now-1.jpg 〜 now-4.jpg   … 古民家の今
-         record-1.jpg 〜 record-3.jpg … 記録・進捗
-         event-1.jpg, event-2.jpg … イベント報告
-         visit.jpg       … 訪れる（下部）
-    3. 写真がまだ無い場所は、自動で「写真をここに」の枠が出ます
-  ■ 文章の直し方
-    <!-- ▼ここから --> 〜 <!-- ▲ここまで --> の間の日本語を書き換えるだけ
+  ■ 構成
+    index.html … トップ（最新の記録カードだけ載せる）
+    archive.html  … 記録の一覧
+    posts/        … 1つの記録＝1ページ（_template.html をコピー）
+    images/日付/  … 記録ごとの写真フォルダ（ファイル名は自由）
+    assets/site.css … 全ページ共通の見た目
+
+  ■ 記録を1件追加する手順
+    1. images/2026-08-01/ のような日付フォルダを作り写真を入れる
+    2. posts/_template.html をコピーして本文を書く
+    3. archive.html の一覧に1行追加
+    4. このページの「活動の記録」カードの古いものを差し替え
   ============================================================
 -->
 <html lang="ja">
@@ -24,195 +25,25 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --paper:#ffffff;
-    --paper-2:#f7f7f6;
-    --ink:#1c1c1c;
-    --ink-soft:#6d6d6d;
-    --line:#e8e8e6;
-    --accent:#1c1c1c;
-    --accent-deep:#1c1c1c;
-    --maxw:1180px;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{
-    font-family:"Noto Sans JP",sans-serif;
-    color:var(--ink);
-    background:var(--paper);
-    line-height:1.9;
-    font-weight:300;
-    -webkit-font-smoothing:antialiased;
-  }
-  h1,h2,h3,.serif{font-family:"Noto Serif JP",serif}
-
-  /* ---------- ヘッダー ---------- */
-  header.nav{
-    position:fixed;top:0;left:0;right:0;z-index:50;
-    display:flex;align-items:center;justify-content:space-between;
-    padding:16px clamp(20px,5vw,48px);
-    background:rgba(255,255,255,.86);
-    backdrop-filter:blur(8px);
-    border-bottom:1px solid transparent;
-    transition:.4s;
-  }
-  header.nav.scrolled{border-bottom:1px solid var(--line)}
-  header.nav .logo{font-family:"Noto Serif JP",serif;font-size:18px;letter-spacing:.14em;font-weight:500}
-  header.nav nav{display:flex;gap:clamp(14px,2.4vw,30px)}
-  header.nav nav a{
-    color:var(--ink-soft);text-decoration:none;font-size:13px;letter-spacing:.08em;
-    padding-bottom:2px;border-bottom:1px solid transparent;transition:.25s;
-  }
-  header.nav nav a:hover{color:var(--ink);border-color:var(--accent)}
-  @media(max-width:640px){header.nav nav{display:none}}
-
-  /* ---------- 写真プレースホルダの仕組み ---------- */
-  .photo{position:relative;overflow:hidden;background:var(--paper-2)}
-  .photo::before{
-    content:attr(data-label);
-    position:absolute;inset:0;
-    display:flex;align-items:center;justify-content:center;
-    color:#bcbcbc;font-size:13px;letter-spacing:.14em;
-    font-family:"Noto Serif JP",serif;
-    background:
-      repeating-linear-gradient(45deg,transparent,transparent 12px,rgba(0,0,0,.03) 12px,rgba(0,0,0,.03) 24px),
-      var(--paper-2);
-  }
-  .photo img{
-    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;
-    z-index:1;
-  }
-
-  /* ---------- ヒーロー（カルーセル） ---------- */
-  .hero{position:relative;height:100vh;min-height:560px;width:100%;overflow:hidden}
-  .hero .slide{position:absolute;inset:0;opacity:0;transition:opacity 2.4s ease;z-index:1}
-  .hero .slide.active{opacity:1;z-index:2}
-  .hero .slide .photo{position:absolute;inset:0}
-  .hero .dots{
-    position:absolute;z-index:5;bottom:30px;left:50%;transform:translateX(-50%);
-    display:flex;gap:11px;
-  }
-  .hero .dots button{
-    width:9px;height:9px;border-radius:50%;padding:0;cursor:pointer;
-    border:1px solid rgba(255,255,255,.85);background:transparent;transition:.3s;
-    box-shadow:0 0 4px rgba(0,0,0,.25);
-  }
-  .hero .dots button.active{background:#fff}
-  .hero{cursor:grab}
-  .hero.dragging{cursor:grabbing}
-  .hero .arrow{
-    position:absolute;top:50%;transform:translateY(-50%);z-index:5;
-    width:46px;height:46px;border-radius:50%;
-    border:1px solid rgba(255,255,255,.7);background:rgba(0,0,0,.18);
-    color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;
-    font-size:22px;line-height:1;padding:0 0 3px;opacity:.55;transition:opacity .3s,background .3s;
-  }
-  .hero:hover .arrow{opacity:1}
-  .hero .arrow:hover{background:rgba(0,0,0,.4)}
-  .hero .arrow.prev{left:clamp(12px,3vw,30px)}
-  .hero .arrow.next{right:clamp(12px,3vw,30px)}
-  @media(max-width:640px){.hero .arrow{width:40px;height:40px;font-size:19px}}
-  .scroll-hint{
-    position:absolute;z-index:5;bottom:24px;right:clamp(16px,4vw,40px);
-    color:#fff;font-size:11px;letter-spacing:.3em;opacity:.85;
-    writing-mode:vertical-rl;text-shadow:0 0 6px rgba(0,0,0,.35);
-  }
-
-  /* ---------- はじめに ---------- */
-  .about-inner{max-width:720px}
-  .about-inner p{margin-top:20px;font-size:clamp(14.5px,1.8vw,16px);color:var(--ink)}
-  .about-quote{
-    font-family:"Noto Serif JP",serif;font-weight:400;
-    font-size:clamp(18px,2.6vw,24px);line-height:1.9;letter-spacing:.04em;
-    margin:36px 0 6px !important;
-  }
-  .about-attr{font-size:13px !important;color:var(--ink-soft) !important;margin-top:8px !important;letter-spacing:.08em}
-
-  /* ---------- 汎用セクション ---------- */
-  section{padding:clamp(70px,11vw,130px) clamp(20px,5vw,48px)}
-  .wrap{max-width:var(--maxw);margin:0 auto}
-  .sec-head{margin-bottom:clamp(38px,6vw,64px)}
-  .sec-head .idx{font-size:12px;letter-spacing:.3em;color:var(--accent-deep);margin-bottom:14px}
-  .sec-head h2{font-size:clamp(24px,3.6vw,38px);font-weight:400;letter-spacing:.08em;line-height:1.5}
-  .sec-head .lead{margin-top:22px;max-width:640px;color:var(--ink-soft);font-size:clamp(14px,1.7vw,16px)}
-  .divider{width:46px;height:1px;background:var(--accent);margin:18px 0 0}
-
-  /* 古民家の今：写真グリッド */
-  .now-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:clamp(10px,1.6vw,20px)}
-  .now-grid .photo{border-radius:2px}
-  .now-grid .g1{grid-column:span 7;aspect-ratio:4/3}
-  .now-grid .g2{grid-column:span 5;aspect-ratio:3/4}
-  .now-grid .g3{grid-column:span 5;aspect-ratio:3/4}
-  .now-grid .g4{grid-column:span 7;aspect-ratio:4/3}
-  @media(max-width:720px){
-    .now-grid .g1,.now-grid .g2,.now-grid .g3,.now-grid .g4{grid-column:1 / -1;aspect-ratio:4/3}
-  }
-  .now-note{margin-top:30px;color:var(--ink-soft);font-size:14px;max-width:660px}
-
-  /* 記録・進捗：タイムライン */
-  .timeline{border-left:1px solid var(--line);margin-left:6px}
-  .t-item{position:relative;padding:0 0 clamp(40px,6vw,58px) clamp(26px,4vw,44px)}
-  .t-item:last-child{padding-bottom:0}
-  .t-item::before{
-    content:"";position:absolute;left:-5px;top:6px;width:9px;height:9px;border-radius:50%;
-    background:var(--accent);box-shadow:0 0 0 4px var(--paper);
-  }
-  .t-item .date{font-size:12px;letter-spacing:.16em;color:var(--accent-deep);margin-bottom:6px}
-  .t-item h3{font-size:clamp(17px,2.2vw,21px);font-weight:500;margin-bottom:12px}
-  .t-item p{color:var(--ink-soft);font-size:15px;max-width:640px}
-  .t-item .photo{margin-top:18px;aspect-ratio:16/9;border-radius:2px;max-width:560px}
-
-  /* イベント報告：カード */
-  .events{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:clamp(18px,2.4vw,30px)}
-  .ev-card{background:var(--paper-2);border:1px solid var(--line);border-radius:3px;overflow:hidden;display:flex;flex-direction:column}
-  .ev-card .photo{aspect-ratio:16/10}
-  .ev-card .body{padding:22px 24px 26px}
-  .ev-card .tag{display:inline-block;font-size:11px;letter-spacing:.12em;color:var(--accent-deep);border:1px solid var(--accent);border-radius:999px;padding:3px 12px;margin-bottom:14px}
-  .ev-card h3{font-size:19px;font-weight:500;margin-bottom:10px}
-  .ev-card .meta{font-size:12.5px;color:var(--ink-soft);letter-spacing:.06em;margin-bottom:12px}
-  .ev-card p{font-size:14px;color:var(--ink-soft)}
-
-  /* 訪れる */
-  .visit{position:relative;color:#fdf9f0;padding:0}
-  .visit .photo{position:absolute;inset:0;z-index:0}
-  .visit::after{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(180deg,rgba(20,20,20,.55),rgba(20,20,20,.72))}
-  .visit .inner{position:relative;z-index:2;max-width:720px;margin:0 auto;text-align:center;padding:clamp(80px,13vw,150px) 24px}
-  .visit .idx{font-size:12px;letter-spacing:.3em;opacity:.85;margin-bottom:16px}
-  .visit h2{font-size:clamp(24px,3.6vw,36px);font-weight:400;letter-spacing:.08em;margin-bottom:26px}
-  .visit p{opacity:.92;font-size:15px;font-weight:300;margin:0 auto 14px;max-width:560px}
-  .visit .contact{margin-top:34px;display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
-  .visit .contact a{
-    color:#fdf9f0;text-decoration:none;border:1px solid rgba(253,249,240,.5);
-    padding:12px 26px;border-radius:999px;font-size:13px;letter-spacing:.1em;transition:.25s;
-  }
-  .visit .contact a:hover{background:rgba(253,249,240,.12);border-color:#fdf9f0}
-
-  /* フッター */
-  footer{background:#fff;color:var(--ink-soft);text-align:center;padding:48px 24px;font-size:12.5px;letter-spacing:.1em;border-top:1px solid var(--line)}
-  footer .fl{font-family:"Noto Serif JP",serif;font-size:16px;letter-spacing:.18em;color:var(--ink);margin-bottom:10px}
-  footer a{color:var(--ink-soft)}
-
-  .fade{opacity:0;transform:translateY(24px);transition:opacity 1s ease,transform 1s ease}
-  .fade.in{opacity:1;transform:none}
-</style>
+<link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
 
 <header class="nav" id="nav">
-  <div class="logo">古民家の記録</div>
+  <div class="logo"><a href="index.html">古民家の記録</a></div>
   <nav>
     <a href="#about">はじめに</a>
     <a href="#now">古民家の今</a>
-    <a href="#record">引き継ぎの記録</a>
-    <a href="#event">イベント</a>
+    <a href="#walk">あゆみ</a>
+    <a href="#record">記録</a>
     <a href="#visit">訪れる</a>
+    <a href="archive.html">記録一覧</a>
   </nav>
 </header>
 
 <!-- ============ トップ ============ -->
 <div class="hero" id="hero">
-  <!-- ▼スライドを増やしたい時はこの .slide をコピーして hero-4.jpg… と足すだけ -->
+  <!-- ▼スライドを増やしたい時はこの .slide をコピーして hero-7.jpg… と足すだけ -->
   <div class="slide active">
     <div class="photo" data-label="写真をここに（images/hero-1.jpg）">
       <img src="images/hero-1.jpg" alt="古民家の外観1" onerror="this.style.display='none'">
@@ -292,8 +123,8 @@
   </div>
 </section>
 
-<!-- ============ 記録・進捗 ============ -->
-<section id="record">
+<!-- ============ これからのあゆみ ============ -->
+<section id="walk">
   <div class="wrap">
     <div class="sec-head fade">
       <div class="idx">02 &nbsp;&mdash;&nbsp; あゆみ</div>
@@ -305,7 +136,7 @@
     </div>
 
     <div class="timeline fade">
-      <!-- ▼各項目：日付・見出し・本文・写真名 を差し替え -->
+      <!-- ▼各項目：日付・見出し・本文 を差し替え -->
       <div class="t-item">
         <div class="date">2026.05</div>
         <h3>はじめのご挨拶</h3>
@@ -326,22 +157,31 @@
   </div>
 </section>
 
-<!-- ============ イベント報告 ============ -->
-<section id="event">
+<!-- ============ 活動の記録（最新分だけカードで見せる） ============ -->
+<section id="record" style="background:var(--paper-2)">
   <div class="wrap">
     <div class="sec-head fade">
-      <div class="idx">03 &nbsp;&mdash;&nbsp; あつまる</div>
-      <h2>イベントの報告</h2>
+      <div class="idx">03 &nbsp;&mdash;&nbsp; きろく</div>
+      <h2>活動の記録</h2>
       <div class="divider"></div>
       <!-- ▼ここから -->
-      <p class="lead">大きな催しではなく、お茶を淹れるくらいの小さな会から。</p>
+      <p class="lead">打ち合わせ、手入れ、小さな会。この家であったことを、一件ずつ記録しています。ここには最新のものだけ。過去の記録は一覧からどうぞ。</p>
       <!-- ▲ここまで -->
     </div>
 
     <div class="events fade">
-      <!-- ▼各カードを差し替え -->
+      <!-- ▼カード：新しい記録ができたら一番上に足し、古いものを削る（3枚まで目安） -->
+      <a class="ev-card" href="posts/2026-05-21_goaisatsu.html">
+        <div class="photo" data-label="写真（images/DSC_1405.jpg）"><img src="images/DSC_1405.jpg" alt="はじめのご挨拶" onerror="this.style.display='none'"></div>
+        <div class="body">
+          <span class="tag">打ち合わせ</span>
+          <h3>はじめのご挨拶</h3>
+          <div class="meta">2026.05.21</div>
+          <p>大家さん一家にお会いし、家の歴史と思い出をうかがいました。すべての出発点になった日。</p>
+        </div>
+      </a>
       <article class="ev-card">
-        <div class="photo" data-label="写真（images/event-1.jpg）"><img src="images/event-1.jpg" alt="イベント1" onerror="this.style.display='none'"></div>
+        <div class="photo" data-label="写真をここに"></div>
         <div class="body">
           <span class="tag">お茶会</span>
           <h3>読書と中国茶を淹れる会</h3>
@@ -350,7 +190,7 @@
         </div>
       </article>
       <article class="ev-card">
-        <div class="photo" data-label="写真（images/event-2.jpg）"><img src="images/event-2.jpg" alt="イベント2" onerror="this.style.display='none'"></div>
+        <div class="photo" data-label="写真をここに"></div>
         <div class="body">
           <span class="tag">これから</span>
           <h3>次のイベント</h3>
@@ -360,6 +200,8 @@
       </article>
       <!-- ▲ここまで -->
     </div>
+
+    <div class="more fade"><a href="archive.html">すべての記録を見る</a></div>
   </div>
 </section>
 
@@ -373,7 +215,6 @@
     <p>ゆっくりと、使う人を増やしていけたらなと思っています。</p>
     <p>まだまだ先ではありますが、少しずつ情報公開していきますのでお待ちください。</p>
     <div class="contact">
-
       <a href="#">SNSを見る</a>
     </div>
     <!-- ▲ここまで -->
@@ -428,7 +269,6 @@
       if(Math.abs(dx)>45){go(dx<0?i+1:i-1);reset();}
     });
     hero.addEventListener('pointerleave',()=>{dragging=false;hero.classList.remove('dragging');});
-    /* 画像のドラッグ選択を無効化 */
     hero.querySelectorAll('img').forEach(im=>im.setAttribute('draggable','false'));
 
     reset();
